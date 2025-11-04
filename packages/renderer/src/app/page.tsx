@@ -2,144 +2,156 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Button, Card, Space, Typography } from 'antd';
-import styled from 'styled-components';
+import { Button, Input } from 'antd';
+import { useRouter } from 'next/navigation';
 import { 
-  RocketOutlined, 
-  ThunderboltOutlined, 
-  HeartOutlined,
-  GithubOutlined 
+  SendOutlined,
+  GithubOutlined,
 } from '@ant-design/icons';
-import TitleBar from '@/components/TitleBar';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useI18n } from '@/contexts/I18nContext';
 
-const { Title, Paragraph } = Typography;
-
-const PageContainer = styled.div`
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-`;
-
-const Content = styled.main`
-  flex: 1;
-  overflow: auto;
-  padding: 2rem;
-`;
-
-const HeroSection = styled.div`
-  text-align: center;
-  padding: 4rem 2rem;
-  color: white;
-`;
-
-const FeatureGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 0 2rem;
-`;
-
-const FeatureCard = styled(Card)`
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border: none;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  }
-  
-  transition: all 0.3s ease;
-`;
-
-const features = [
-  {
-    icon: <RocketOutlined style={{ fontSize: '2rem', color: '#667eea' }} />,
-    title: 'React 19',
-    description: '使用最新的 React 19 特性，包括并发渲染和自动批处理',
-  },
-  {
-    icon: <ThunderboltOutlined style={{ fontSize: '2rem', color: '#f59e0b' }} />,
-    title: 'Next.js',
-    description: '基于 Next.js 14 的强大路由和优化功能',
-  },
-  {
-    icon: <HeartOutlined style={{ fontSize: '2rem', color: '#ec4899' }} />,
-    title: 'Tailwind CSS',
-    description: '使用 Tailwind CSS 快速构建现代化界面',
-  },
-];
+const { TextArea } = Input;
 
 export default function HomePage() {
-  const [version, setVersion] = React.useState<string>('');
-
-  React.useEffect(() => {
-    // Get app version from Electron
-    if (typeof window !== 'undefined' && window.electronAPI) {
-      window.electronAPI.getVersion().then(setVersion);
-    }
-  }, []);
+  const [message, setMessage] = React.useState('');
+  const router = useRouter();
+  const { theme } = useTheme();
+  const { t } = useI18n();
 
   return (
-    <PageContainer>
-      <TitleBar />
-      
-      <Content>
-        <HeroSection>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <Title level={1} style={{ color: 'white', fontSize: '3.5rem', marginBottom: '1rem' }}>
-              🚀 Electron + React 19
-            </Title>
-            <Paragraph style={{ fontSize: '1.25rem', color: 'rgba(255,255,255,0.9)' }}>
-              现代化的桌面应用开发模板
-            </Paragraph>
-            {version && (
-              <Paragraph style={{ color: 'rgba(255,255,255,0.7)' }}>
-                版本: {version}
-              </Paragraph>
-            )}
-            <Space size="large" style={{ marginTop: '2rem' }}>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button type="primary" size="large" icon={<RocketOutlined />}>
-                  开始使用
-                </Button>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button size="large" icon={<GithubOutlined />} style={{ background: 'white' }}>
-                  查看源码
-                </Button>
-              </motion.div>
-            </Space>
-          </motion.div>
-        </HeroSection>
-
-        <FeatureGrid>
-          {features.map((feature, index) => (
-            <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+    <div className="h-full flex flex-col">
+      {/* 主内容区域 */}
+      <div className="flex-1 flex flex-col items-center justify-center p-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-8 max-w-2xl"
+        >
+          {/* Logo */}
+          <div className="mb-6">
+            <div 
+              className="w-20 h-20 mx-auto rounded-2xl flex items-center justify-center shadow-lg"
+              style={{
+                background: `linear-gradient(135deg, ${theme.primary} 0%, ${theme.primaryLight} 100%)`
+              }}
             >
-              <FeatureCard hoverable>
-                <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-                  {feature.icon}
-                  <Title level={3}>{feature.title}</Title>
-                  <Paragraph>{feature.description}</Paragraph>
-                </Space>
-              </FeatureCard>
+              <span className="text-white font-bold text-3xl">E</span>
+            </div>
+          </div>
+
+          <h1 className="text-4xl font-bold mb-3" style={{ color: theme.primary }}>
+            {t('welcome')}
+          </h1>
+          <p className="text-lg mb-8" style={{ color: theme.textSecondary }}>
+            {t('subtitle')}
+          </p>
+
+          {/* 快捷功能卡片 */}
+          <div className="grid grid-cols-2 gap-3 mb-8">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              onClick={() => router.push('/chat')}
+              className="p-4 rounded-xl cursor-pointer text-left"
+              style={{
+                background: `${theme.primary}10`,
+                border: `1px solid ${theme.border}`
+              }}
+            >
+              <div className="text-2xl mb-2">💬</div>
+              <div className="text-sm font-medium" style={{ color: theme.text }}>{t('startChat')}</div>
+              <div className="text-xs mt-1" style={{ color: theme.textSecondary }}>{t('startChatDesc')}</div>
             </motion.div>
-          ))}
-        </FeatureGrid>
-      </Content>
-    </PageContainer>
+
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="p-4 rounded-xl cursor-pointer text-left"
+              style={{
+                background: `${theme.primary}10`,
+                border: `1px solid ${theme.border}`
+              }}
+            >
+              <div className="text-2xl mb-2">🚀</div>
+              <div className="text-sm font-medium" style={{ color: theme.text }}>{t('techStack')}</div>
+              <div className="text-xs mt-1" style={{ color: theme.textSecondary }}>{t('techStackDesc')}</div>
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              onClick={() => router.push('/docs')}
+              className="p-4 rounded-xl cursor-pointer text-left"
+              style={{
+                background: `${theme.primary}10`,
+                border: `1px solid ${theme.border}`
+              }}
+            >
+              <div className="text-2xl mb-2">📚</div>
+              <div className="text-sm font-medium" style={{ color: theme.text }}>{t('viewDocs')}</div>
+              <div className="text-xs mt-1" style={{ color: theme.textSecondary }}>{t('viewDocsDesc')}</div>
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              onClick={() => router.push('/settings')}
+              className="p-4 rounded-xl cursor-pointer text-left"
+              style={{
+                background: `${theme.primary}10`,
+                border: `1px solid ${theme.border}`
+              }}
+            >
+              <div className="text-2xl mb-2">⚙️</div>
+              <div className="text-sm font-medium" style={{ color: theme.text }}>{t('personalSettings')}</div>
+              <div className="text-xs mt-1" style={{ color: theme.textSecondary }}>{t('personalSettingsDesc')}</div>
+            </motion.div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* 底部输入框 */}
+      <div className="p-4" style={{ borderTop: `1px solid ${theme.border}` }}>
+        <div 
+          className="flex items-end space-x-2 p-3 rounded-xl"
+          style={{
+            background: `${theme.primary}08`,
+            border: `1px solid ${theme.border}`
+          }}
+        >
+          <TextArea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder={t('inputPlaceholder')}
+            autoSize={{ minRows: 1, maxRows: 4 }}
+            variant="borderless"
+            className="flex-1"
+            style={{ background: 'transparent', color: theme.text }}
+          />
+          <Button 
+            type="primary" 
+            icon={<SendOutlined />}
+            disabled={!message.trim()}
+            className="mb-1"
+            style={{
+              background: message.trim() ? theme.primary : undefined,
+              border: 'none'
+            }}
+          />
+        </div>
+        
+        <div className="flex items-center justify-between mt-2 px-1">
+          <div className="text-xs" style={{ color: theme.textSecondary }}>
+            {t('poweredBy')}
+          </div>
+          <Button 
+            type="link" 
+            size="small" 
+            icon={<GithubOutlined />}
+            style={{ color: theme.textSecondary }}
+          >
+            GitHub
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }

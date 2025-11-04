@@ -8,17 +8,20 @@ let mainWindow: BrowserWindow | null = null;
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
-    width: APP_CONFIG.WINDOW.DEFAULT_WIDTH,
-    height: APP_CONFIG.WINDOW.DEFAULT_HEIGHT,
-    minWidth: APP_CONFIG.WINDOW.MIN_WIDTH,
-    minHeight: APP_CONFIG.WINDOW.MIN_HEIGHT,
+    width: 900,
+    height: 400,
+    minWidth: 800,
+    minHeight: 400,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
     },
-    titleBarStyle: 'hiddenInset',
-    trafficLightPosition: { x: 15, y: 15 },
+    transparent: true,
+    frame: false,
+    backgroundColor: '#00000000',
+    hasShadow: true,
+    roundedCorners: true,
   });
 
   // Load the app
