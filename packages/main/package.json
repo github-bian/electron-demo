@@ -1,0 +1,56 @@
+{
+  "name": "@electron-react-monorepo/main",
+  "version": "1.0.0",
+  "description": "Electron main process",
+  "main": "./dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc && electron .",
+    "dev:wait": "sleep 3 && tsc && electron .",
+    "start": "electron .",
+    "package": "electron-builder",
+    "clean": "rm -rf dist *.tsbuildinfo release",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@electron-react-monorepo/shared": "workspace:*",
+    "electron-is-dev": "^2.0.0",
+    "electron-store": "^8.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1",
+    "typescript": "^5.3.3"
+  },
+  "build": {
+    "appId": "com.electron.react.app",
+    "productName": "ElectronReactApp",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    }
+  }
+}

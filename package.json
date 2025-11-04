@@ -1,0 +1,25 @@
+{
+  "name": "electron-react-monorepo",
+  "version": "1.0.0",
+  "description": "A modern Electron desktop app with React 19, Next.js, Tailwind CSS, Ant Design, and Motion animations",
+  "private": true,
+  "author": "Your Name",
+  "license": "MIT",
+  "scripts": {
+    "dev": "concurrently --kill-others \"pnpm --filter renderer dev\" \"pnpm --filter main dev:wait\"",
+    "build": "pnpm --filter renderer build && pnpm --filter main build",
+    "start": "pnpm --filter main start",
+    "package": "pnpm build && pnpm --filter main package",
+    "lint": "pnpm -r lint",
+    "type-check": "pnpm -r type-check",
+    "clean": "pnpm -r clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}
