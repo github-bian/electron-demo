@@ -1,13 +1,23 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import { IPC_CHANNELS } from '@electron-react-monorepo/shared';
 
+// 获取平台信息
+const platform = process.platform;
+
 // Expose protected methods that allow the renderer process to use
 // the ipcRenderer without exposing the entire object
 contextBridge.exposeInMainWorld('electronAPI', {
+  // Platform info
+  platform: platform,
+  isMac: platform === 'darwin',
+  isWindows: platform === 'win32',
+  isLinux: platform === 'linux',
+
   // Window controls
   minimizeWindow: () => ipcRenderer.invoke(IPC_CHANNELS.WINDOW.MINIMIZE),
   maximizeWindow: () => ipcRenderer.invoke(IPC_CHANNELS.WINDOW.MAXIMIZE),
   closeWindow: () => ipcRenderer.invoke(IPC_CHANNELS.WINDOW.CLOSE),
+  openSettings: () => ipcRenderer.invoke(IPC_CHANNELS.WINDOW.OPEN_SETTINGS),
 
   // App info
   getVersion: () => ipcRenderer.invoke(IPC_CHANNELS.APP.GET_VERSION),
@@ -22,9 +32,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
 // Type definitions for TypeScript
 export interface ElectronAPI {
+  platform: string;
+  isMac: boolean;
+  isWindows: boolean;
+  isLinux: boolean;
   minimizeWindow: () => Promise<void>;
   maximizeWindow: () => Promise<void>;
   closeWindow: () => Promise<void>;
+  openSettings: () => Promise<void>;
   getVersion: () => Promise<string>;
   getPath: (name: string) => Promise<string>;
   quit: () => Promise<void>;

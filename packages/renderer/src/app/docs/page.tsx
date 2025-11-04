@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Card, Typography, Divider } from 'antd';
+import { motion } from 'framer-motion';
 import { 
   RocketOutlined, 
   CodeOutlined,
@@ -13,7 +14,12 @@ const { Title, Paragraph, Text } = Typography;
 
 export default function DocsPage() {
   return (
-    <div className="p-6 overflow-auto h-full">
+    <motion.div 
+      className="p-6 overflow-auto h-full"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       <div className="max-w-4xl mx-auto">
         <Title level={2}>📚 使用文档</Title>
         <Paragraph className="text-gray-600 mb-6">
@@ -94,6 +100,6 @@ export default function DocsPage() {
           </Card>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

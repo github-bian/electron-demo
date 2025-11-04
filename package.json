@@ -10,6 +10,10 @@
     "build": "pnpm --filter renderer build && pnpm --filter main build",
     "start": "pnpm --filter main start",
     "package": "pnpm build && pnpm --filter main package",
+    "package:win": "pnpm build && pnpm --filter main package:win",
+    "package:mac": "pnpm build && pnpm --filter main package:mac",
+    "package:mac:universal": "pnpm build && pnpm --filter main package:mac:universal",
+    "package:all": "pnpm build && pnpm --filter main package:all",
     "lint": "pnpm -r lint",
     "type-check": "pnpm -r type-check",
     "clean": "pnpm -r clean && rm -rf node_modules"

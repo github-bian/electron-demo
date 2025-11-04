@@ -1,16 +1,10 @@
 'use client';
 
-import React from 'react';
-import { ConfigProvider, theme } from 'antd';
-import { Button } from 'antd';
-import { 
-  SettingOutlined,
-  MinusOutlined,
-  CloseOutlined,
-} from '@ant-design/icons';
+import React, { Suspense } from 'react';
+import { ConfigProvider, theme as antdTheme, Spin } from 'antd';
+import zhCN from 'antd/locale/zh_CN';
 import { useRouter, usePathname } from 'next/navigation';
 import StyledComponentsRegistry from '@/lib/registry';
-import { ThemeProvider as StyledThemeProvider } from '@/providers/ThemeProvider';
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
 import { I18nProvider, useI18n } from '@/contexts/I18nContext';
 import Navigation from '@/components/Navigation';
@@ -19,33 +13,21 @@ import '@/styles/globals.css';
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { theme: currentTheme, opacity } = useTheme();
+  const { theme: currentTheme, themeMode, opacity } = useTheme();
   const { t } = useI18n();
 
-  const handleClose = () => {
-    if (typeof window !== 'undefined') {
-      window.close();
+  // 检测操作系统平台
+  const [isMac, setIsMac] = React.useState(false);
+  
+  React.useEffect(() => {
+    // 优先使用 Electron API
+    if (typeof window !== 'undefined' && window.electronAPI) {
+      setIsMac(window.electronAPI.isMac);
+    } else {
+      // 退回方案：通过 navigator 检测
+      setIsMac(navigator.platform.toLowerCase().includes('mac'));
     }
-  };
-
-  const handleMinimize = () => {
-    // 需要在 IPC 中实现最小化功能
-  };
-
-  const getPageTitle = () => {
-    switch (pathname) {
-      case '/':
-        return t('home');
-      case '/chat':
-        return t('chat');
-      case '/docs':
-        return t('docs');
-      case '/settings':
-        return t('settings');
-      default:
-        return 'Electron App';
-    }
-  };
+  }, []);
 
   // 根据透明度调整背景色
   const getBackgroundWithOpacity = (color: string) => {
@@ -57,16 +39,38 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     return color;
   };
 
+  // 获取平台特定的背景样式
+  const getBackgroundStyle = (color: string) => {
+    if (isMac) {
+      // macOS: 使用 vibrancy 效果，背景需要是半透明的
+      return {
+        background: getBackgroundWithOpacity(color),
+      };
+    } else {
+      // Windows/Linux: 使用实色背景
+      return {
+        background: themeMode === 'dark' ? '#1f2937' : '#ffffff',
+      };
+    }
+  };
+
   return (
-    <div 
+    <ConfigProvider
+      locale={zhCN}
+      theme={{
+        algorithm: themeMode === 'dark' ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
+        token: {
+          colorPrimary: currentTheme.primary,
+          borderRadius: 8,
+        },
+      }}
+    >
+      <div 
       className="h-screen flex"
       style={{
-        background: getBackgroundWithOpacity(currentTheme.background),
-        backdropFilter: 'blur(40px)',
-        WebkitBackdropFilter: 'blur(40px)',
-        borderRadius: '12px',
+        ...getBackgroundStyle(currentTheme.background),
+        borderRadius: '0px', // 原生标题栏不需要圆角
         overflow: 'hidden',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
         border: 'none',
         outline: 'none'
       }}
@@ -75,17 +79,19 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
       <div 
         className="w-64 border-r flex flex-col"
         style={{ 
-          background: getBackgroundWithOpacity(currentTheme.sidebarBg),
+          ...(isMac 
+            ? { background: getBackgroundWithOpacity(currentTheme.sidebarBg) }
+            : { background: themeMode === 'dark' ? '#111827' : '#f9fafb' }
+          ),
           borderRight: `1px solid ${currentTheme.border}`,
         }}
       >
-        {/* Logo 区域 - 可拖动 */}
+        {/* Logo 区域 */}
         <div 
           className="flex items-center space-x-2 px-4 py-4 border-b"
           style={{ 
-            WebkitAppRegion: 'drag',
             borderBottom: `1px solid ${currentTheme.border}`,
-          } as any}
+          }}
         >
           <div 
             className="w-8 h-8 rounded-lg flex items-center justify-center"
@@ -124,55 +130,21 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
       {/* 主内容区 */}
       <div className="flex-1 flex flex-col">
-        {/* 自定义标题栏 - 可拖动 */}
-        <div 
-          className="flex items-center justify-between px-4 py-3 border-b"
-          style={{ 
-            WebkitAppRegion: 'drag',
-            borderBottom: `1px solid ${currentTheme.border}`,
-          } as any}
-        >
-          <div className="flex items-center space-x-2">
-            <span 
-              className="text-sm font-medium"
-              style={{ color: currentTheme.primary }}
-            >
-              {getPageTitle()}
-            </span>
-          </div>
-          
-          <div className="flex items-center space-x-1" style={{ WebkitAppRegion: 'no-drag' } as any}>
-            <Button 
-              type="text" 
-              size="small" 
-              icon={<SettingOutlined />}
-              onClick={() => router.push('/settings')}
-              style={{ color: currentTheme.textSecondary }}
-            />
-            <Button 
-              type="text" 
-              size="small" 
-              icon={<MinusOutlined />}
-              onClick={handleMinimize}
-              style={{ color: currentTheme.textSecondary }}
-            />
-            <Button 
-              type="text" 
-              size="small" 
-              icon={<CloseOutlined />}
-              onClick={handleClose}
-              style={{ color: currentTheme.textSecondary }}
-              className="hover:text-red-500"
-            />
-          </div>
-        </div>
-
         {/* 页面内容区域 */}
         <div className="flex-1 overflow-auto">
-          {children}
+          <Suspense 
+            fallback={
+              <div className="h-full flex items-center justify-center">
+                <Spin size="large" />
+              </div>
+            }
+          >
+            {children}
+          </Suspense>
         </div>
       </div>
     </div>
+    </ConfigProvider>
   );
 }
 
@@ -189,13 +161,11 @@ export default function RootLayout({
       </head>
       <body>
         <StyledComponentsRegistry>
-          <StyledThemeProvider>
-            <ThemeProvider>
-              <I18nProvider>
-                <LayoutContent>{children}</LayoutContent>
-              </I18nProvider>
-            </ThemeProvider>
-          </StyledThemeProvider>
+          <ThemeProvider>
+            <I18nProvider>
+              <LayoutContent>{children}</LayoutContent>
+            </I18nProvider>
+          </ThemeProvider>
         </StyledComponentsRegistry>
       </body>
     </html>

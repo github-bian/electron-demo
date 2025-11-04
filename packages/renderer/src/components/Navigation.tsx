@@ -18,11 +18,18 @@ export default function Navigation() {
   const { theme } = useTheme();
   const { t } = useI18n();
 
+  const handleSettingsClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (typeof window !== 'undefined' && window.electronAPI) {
+      window.electronAPI.openSettings();
+    }
+  };
+
   const navItems = [
-    { path: '/', icon: HomeOutlined, labelKey: 'home' as const },
-    { path: '/chat', icon: MessageOutlined, labelKey: 'chat' as const },
-    { path: '/docs', icon: FileTextOutlined, labelKey: 'docs' as const },
-    { path: '/settings', icon: SettingOutlined, labelKey: 'settings' as const },
+    { path: '/', icon: HomeOutlined, labelKey: 'home' as const, onClick: undefined },
+    { path: '/chat', icon: MessageOutlined, labelKey: 'chat' as const, onClick: undefined },
+    { path: '/docs', icon: FileTextOutlined, labelKey: 'docs' as const, onClick: undefined },
+    { path: '/settings', icon: SettingOutlined, labelKey: 'settings' as const, onClick: handleSettingsClick },
   ];
 
   return (
@@ -41,6 +48,7 @@ export default function Navigation() {
             <Link
               href={item.path}
               style={{ textDecoration: 'none' }}
+              onClick={item.onClick}
             >
               <div
                 className="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer"

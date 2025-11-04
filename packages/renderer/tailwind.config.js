@@ -43,7 +43,4 @@ module.exports = {
     },
   },
   plugins: [],
-  corePlugins: {
-    preflight: false, // Disable Tailwind's reset to avoid conflicts with Ant Design
-  },
 };

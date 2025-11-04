@@ -8,7 +8,12 @@
     "dev": "tsc && electron .",
     "dev:wait": "sleep 3 && tsc && electron .",
     "start": "electron .",
-    "package": "electron-builder",
+    "clean:dist": "rm -rf ../../dist",
+    "package": "npm run clean:dist && electron-builder",
+    "package:win": "npm run clean:dist && electron-builder --win --x64",
+    "package:mac": "npm run clean:dist && electron-builder --mac --arm64",
+    "package:mac:universal": "npm run clean:dist && electron-builder --mac --universal",
+    "package:all": "npm run clean:dist && electron-builder -mw --arm64 --x64",
     "clean": "rm -rf dist *.tsbuildinfo release",
     "type-check": "tsc --noEmit"
   },
@@ -27,26 +32,78 @@
     "appId": "com.electron.react.app",
     "productName": "ElectronReactApp",
     "directories": {
-      "output": "release"
+      "output": "../../dist"
     },
     "files": [
       "dist/**/*",
+      "assets/**/*",
       "package.json"
     ],
+    "extraResources": [
+      {
+        "from": "../renderer/out",
+        "to": "renderer/out",
+        "filter": ["**/*"]
+      }
+    ],
     "mac": {
+      "icon": "assets/icons/icon.png",
       "category": "public.app-category.developer-tools",
       "target": [
-        "dmg",
-        "zip"
-      ]
+        {
+          "target": "dmg",
+          "arch": ["arm64", "x64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["arm64", "x64"]
+        }
+      ],
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": null,
+      "entitlementsInherit": null
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ],
+      "window": {
+        "width": 540,
+        "height": 380
+      }
     },
     "win": {
+      "icon": "assets/icons/icon.ico",
       "target": [
-        "nsis",
-        "portable"
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
       ]
     },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Electron App"
+    },
     "linux": {
+      "icon": "assets/icons/icon.png",
       "target": [
         "AppImage",
         "deb"

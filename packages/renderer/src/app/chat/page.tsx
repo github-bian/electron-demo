@@ -41,7 +41,12 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <motion.div 
+      className="h-full flex flex-col"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       {/* 消息列表 */}
       <div className="flex-1 overflow-auto p-6 space-y-4">
         {messages.length === 0 ? (
@@ -101,6 +106,6 @@ export default function ChatPage() {
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

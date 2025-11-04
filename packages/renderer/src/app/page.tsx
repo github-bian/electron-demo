@@ -19,6 +19,12 @@ export default function HomePage() {
   const { theme } = useTheme();
   const { t } = useI18n();
 
+  const handleOpenSettings = () => {
+    if (typeof window !== 'undefined' && window.electronAPI) {
+      window.electronAPI.openSettings();
+    }
+  };
+
   return (
     <div className="h-full flex flex-col">
       {/* 主内容区域 */}
@@ -93,7 +99,7 @@ export default function HomePage() {
 
             <motion.div
               whileHover={{ scale: 1.02 }}
-              onClick={() => router.push('/settings')}
+              onClick={handleOpenSettings}
               className="p-4 rounded-xl cursor-pointer text-left"
               style={{
                 background: `${theme.primary}10`,

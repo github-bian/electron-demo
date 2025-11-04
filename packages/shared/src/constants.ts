@@ -5,6 +5,7 @@ export const IPC_CHANNELS = {
     MAXIMIZE: 'window:maximize',
     CLOSE: 'window:close',
     RESIZE: 'window:resize',
+    OPEN_SETTINGS: 'window:open-settings',
   },
   APP: {
     GET_VERSION: 'app:get-version',
